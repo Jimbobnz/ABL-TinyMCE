@@ -74,11 +74,11 @@ CLASS Form1 INHERITS Form:
         end.    
         
         decodeReturnString = chReturnValue:Result. 
+        decodeReturnString = System.Text.RegularExpressions.Regex:Unescape(decodeReturnString).
         
-        decodeReturnString = CODEPAGE-CONVERT(decodeReturnString,  'ISO8859-1', 'UTF-8').
-        
-        decodeReturnString = replace(decodeReturnString, "\u003C", "<").
-        decodeReturnString = replace(decodeReturnString, "\n", "~n").
+        //decodeReturnString = CODEPAGE-CONVERT(decodeReturnString,  'ISO8859-1', 'UTF-8').
+        //decodeReturnString = replace(decodeReturnString, "\u003C", "<").
+        //decodeReturnString = replace(decodeReturnString, "\n", "~n").
         
         MESSAGE decodeReturnString
             VIEW-AS ALERT-BOX INFO TITLE "mytextarea Value".
