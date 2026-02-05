@@ -61,24 +61,31 @@ CLASS Form1 INHERITS Form:
         DEFINE VARIABLE chReturnValue AS CLASS     "System.Threading.Tasks.Task<CHARACTER>" NO-UNDO.
         
         DEFINE VARIABLE i             AS INTEGER   NO-UNDO.
+        DEFINE VARIABLE decodeReturnString AS CHARACTER NO-UNDO.
         
         javaScript = "document.getElementById('mytextarea').value".
         WAIT-FOR THIS-OBJECT:webView21:CoreWebView2:ExecuteScriptAsync(javaScript) SET chReturnValue.
         
-        //I don't fully understand why I need to do this, but it works
-        RETURN-VALUE-COMPLETE:       
-        DO i = 1 TO 100:               
-            IF chReturnValue:IsCompleted THEN 
-            DO:
-               
-                MESSAGE chReturnValue:Result SKIP
-                        SUBSTITUTE("Loop Count &1", i) 
-                        VIEW-AS ALERT-BOX INFO TITLE "mytextarea Value". 
-                LEAVE RETURN-VALUE-COMPLETE.
-                
-            END.
-            PROCESS EVENTS.                   
-        END.            
+        
+         
+        //I don't fully understand why I need to do this, but it works    
+        do while NOT chReturnValue:IsCompleted :
+            PROCESS EVENTS.
+        end.    
+        
+        decodeReturnString = chReturnValue:Result. 
+        
+        decodeReturnString = CODEPAGE-CONVERT(decodeReturnString,  'ISO8859-1', 'UTF-8').
+        
+        decodeReturnString = replace(decodeReturnString, "\u003C", "<").
+        decodeReturnString = replace(decodeReturnString, "\n", "~n").
+        
+        MESSAGE decodeReturnString
+            VIEW-AS ALERT-BOX INFO TITLE "mytextarea Value".
+                        
+        chReturnValue:Dispose().
+                         
+        Delete object chReturnValue.        
 		
         RETURN.
 
